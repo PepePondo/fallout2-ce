@@ -18,6 +18,8 @@ public class ImportActivity extends Activity {
 
     /** Waiting for the player to allow access to the PortHub folder. */
     private boolean askedForAccess = false;
+    /** The settings screen actually took over (this activity was stopped) since asking. */
+    private boolean leftForSettings = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,34 +34,39 @@ public class ImportActivity extends Activity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if (askedForAccess) {
+            leftForSettings = true;
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        if (askedForAccess && PortHubFolder.canUse(this)) {
+        // Decide only once the player is back from the settings screen, allowed or not.
+        if (askedForAccess && leftForSettings) {
             askedForAccess = false;
-            if (PortHubFolder.hasGame(PortHubFolder.dir())) {
-                startMainActivity();
-                finish();
-            } else {
-                openPicker();
-            }
+            leftForSettings = false;
+            continueAfterAccess();
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == ACCESS_REQUEST_CODE && !PortHubFolder.canUse(this)) {
+        // Android 6 to 10: a permission dialog, not a settings screen.
+        if (requestCode == ACCESS_REQUEST_CODE && askedForAccess) {
             askedForAccess = false;
-            openPicker();
+            continueAfterAccess();
         }
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        // Back from the settings screen without allowing access: offer the original folder picker.
-        if (hasFocus && askedForAccess && !PortHubFolder.canUse(this)
-                && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            askedForAccess = false;
+    /** With access, run from the PortHub folder; without it (or without a game there), the original picker. */
+    private void continueAfterAccess() {
+        if (PortHubFolder.canUse(this) && PortHubFolder.hasGame(PortHubFolder.dir())) {
+            startMainActivity();
+            finish();
+        } else {
             openPicker();
         }
     }
