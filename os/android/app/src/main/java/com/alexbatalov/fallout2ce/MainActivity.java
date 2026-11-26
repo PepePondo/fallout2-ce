@@ -2,6 +2,8 @@ package com.alexbatalov.fallout2ce;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.Os;
 
 import org.libsdl.app.SDLActivity;
 
@@ -12,7 +14,21 @@ public class MainActivity extends SDLActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Decide where the game runs before SDL starts the native code.
+        final boolean usePortHub = PortHubFolder.preferred(this) && PortHubFolder.canUse(this);
+        if (usePortHub) {
+            try {
+                Os.setenv(PortHubFolder.ENV_DATA_PATH, PortHubFolder.dir().getAbsolutePath(), true);
+            } catch (ErrnoException e) {
+                // Falls back to the app's own folder.
+            }
+        }
+
         super.onCreate(savedInstanceState);
+
+        if (usePortHub) {
+            return;
+        }
 
         final File externalFilesDir = getExternalFilesDir(null);
 

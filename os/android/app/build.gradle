@@ -7,6 +7,8 @@ android {
 
     defaultConfig {
         applicationId 'com.alexbatalov.fallout2ce'
+        // Installs next to the original port instead of clashing with its signature.
+        applicationIdSuffix '.porthub'
         minSdk 21
         targetSdk 32
         versionCode 4

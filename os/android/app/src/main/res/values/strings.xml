@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Fallout 2</string>
+    <string name="app_name">Fallout 2 (PortHub)</string>
     <string name="loading_dialog_title">PLEASE STAND BY</string>
     <string name="loading_dialog_message">Copying files…</string>
+    <string name="porthub_access_message">Allow access to all files so Fallout 2 can run from the PortHub folder.</string>
 </resources>

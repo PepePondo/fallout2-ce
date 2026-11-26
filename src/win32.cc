@@ -51,7 +51,9 @@ int main(int argc, char* argv[])
 #if __ANDROID__
     SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-    chdir(SDL_AndroidGetExternalStoragePath());
+    // Set by the Java side when the game runs from the PortHub folder.
+    const char* dataPath = getenv("FALLOUT_DATA_PATH");
+    chdir(dataPath != nullptr && dataPath[0] != 0 ? dataPath : SDL_AndroidGetExternalStoragePath());
 #endif
 
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
