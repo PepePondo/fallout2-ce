@@ -22,7 +22,7 @@ public class ImportActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (PortHubFolder.hasGame(PortHubFolder.dir())) {
+        if (PortHubFolder.worthAsking(this)) {
             Toast.makeText(this, R.string.porthub_access_message, Toast.LENGTH_LONG).show();
             askedForAccess = true;
             PortHubFolder.requestAccess(this, ACCESS_REQUEST_CODE);
@@ -36,8 +36,12 @@ public class ImportActivity extends Activity {
         super.onResume();
         if (askedForAccess && PortHubFolder.canUse(this)) {
             askedForAccess = false;
-            startMainActivity();
-            finish();
+            if (PortHubFolder.hasGame(PortHubFolder.dir())) {
+                startMainActivity();
+                finish();
+            } else {
+                openPicker();
+            }
         }
     }
 

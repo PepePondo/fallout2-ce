@@ -40,6 +40,14 @@ final class PortHubFolder {
         return hasGame(dir());
     }
 
+    /**
+     * Worth asking for access: without it Android 11+ hides the folder's files from this app,
+     * so only the folder itself can be checked until the player allows access.
+     */
+    static boolean worthAsking(Context context) {
+        return !canUse(context) && dir().isDirectory();
+    }
+
     static boolean canUse(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return Environment.isExternalStorageManager();
