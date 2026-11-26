@@ -11,8 +11,9 @@ android {
         applicationIdSuffix '.porthub'
         minSdk 21
         targetSdk 32
-        versionCode 4
-        versionName '1.3.0'
+        // PortHub release builds pass a rising version code so each one updates over the last.
+        versionCode (project.findProperty('porthubVersionCode') ?: '4') as int
+        versionName '1.3.0' + (project.findProperty('porthubVersionSuffix') ?: '')
         externalNativeBuild {
             cmake {
                 arguments '-DANDROID_STL=c++_static'
